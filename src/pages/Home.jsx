@@ -1,7 +1,121 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  // State for image interaction
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
+  const imageRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Handle mouse down event to start dragging
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartPosition({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  // Handle touch start event for mobile devices
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setStartPosition({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y
+    });
+  };
+
+  // Handle mouse move event while dragging
+  const handleMouseMove = (e) => {
+    if (isDragging && containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+      
+      const newX = e.clientX - startPosition.x;
+      const newY = e.clientY - startPosition.y;
+      
+      // Calculate limits to keep image within view
+      const maxX = (containerWidth * scale - containerWidth) / 2;
+      const maxY = (containerHeight * scale - containerHeight) / 2;
+      
+      // Apply constraints
+      const constrainedX = Math.max(-maxX, Math.min(maxX, newX));
+      const constrainedY = Math.max(-maxY, Math.min(maxY, newY));
+      
+      setPosition({
+        x: constrainedX,
+        y: constrainedY
+      });
+    }
+  };
+
+  // Handle touch move event for mobile devices
+  const handleTouchMove = (e) => {
+    if (isDragging && containerRef.current) {
+      const touch = e.touches[0];
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+      
+      const newX = touch.clientX - startPosition.x;
+      const newY = touch.clientY - startPosition.y;
+      
+      // Calculate limits to keep image within view
+      const maxX = (containerWidth * scale - containerWidth) / 2;
+      const maxY = (containerHeight * scale - containerHeight) / 2;
+      
+      // Apply constraints
+      const constrainedX = Math.max(-maxX, Math.min(maxX, newX));
+      const constrainedY = Math.max(-maxY, Math.min(maxY, newY));
+      
+      setPosition({
+        x: constrainedX,
+        y: constrainedY
+      });
+    }
+  };
+
+  // Handle mouse up event to stop dragging
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Handle touch end event for mobile devices
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Handle wheel event for zooming
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const zoomSensitivity = 0.001;
+    const delta = -e.deltaY * zoomSensitivity;
+    const newScale = Math.max(1, Math.min(3, scale + delta)); // Limit scale between 1 and 3
+    setScale(newScale);
+  };
+
+  // Handle double click to reset zoom and position
+  const handleDoubleClick = () => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  // Add event listeners for mouse and touch events
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex flex-col md:flex-row items-center justify-center p-4 sm:p-6 md:p-8">
       {/* Left Side - Introduction */}
@@ -10,8 +124,9 @@ const Home = () => {
           Mohammed Mbarak Hassan
         </h1>
         <p className="text-base sm:text-lg md:text-xl mb-6 text-gray-300">
-          Passionate Data Analyst, Software Developer, and Cybersecurity Analyst dedicated to building secure and scalable applications that drive innovation.
+           With a strong blend of curiosity and creativity, I thrive at the intersection of data, code, and security. I'm a passionate Data Analyst, Software Developer, and Cybersecurity Analyst dedicated to building secure, scalable, and impactful applications that drive innovation and create real-world solutions.
         </p>
+
         
         {/* Social Links */}
         <div className="flex justify-center md:justify-start space-x-4 mb-8">
@@ -69,63 +184,44 @@ const Home = () => {
         </div>
       </div>
       
-      {/* Right Side - Visual Element */}
+      {/* Right Side - Interactive Profile Image in Circle */}
       <div className="w-full md:w-1/2 flex justify-center items-center">
         <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96">
-          {/* Tech-themed Image */}
-          <div className="relative w-full h-full rounded-full overflow-hidden shadow-xl">
-            {/* Background Circle */}
-            <div className="absolute inset-0 rounded-full border-4 border-blue-500 shadow-2xl z-0"></div>
+          {/* Profile Circle Container */}
+          <div 
+            ref={containerRef}
+            className="relative w-full h-full rounded-full overflow-hidden border-4 border-blue-500 shadow-xl cursor-pointer"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onWheel={handleWheel}
+            onDoubleClick={handleDoubleClick}
+          >
+            {/* Profile Image - Direct reference to image in public folder */}
+            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+              <img 
+                ref={imageRef}
+                src="/img/IMG-20221223-WA0085.jpg" 
+                alt="Mohammed Mbarak Hassan" 
+                className="w-full h-full object-contain transition-transform duration-200"
+                style={{ 
+                  transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                  transformOrigin: 'center'
+                }}
+                draggable="false"
+              />
+            </div>
             
-            {/* Tech Collage Image */}
-            <div className="w-full h-full relative bg-gradient-to-r from-indigo-900 via-blue-800 to-purple-900 z-10 flex items-center justify-center">
-              {/* Tech Icons Floating in Circle */}
-              <div className="absolute inset-0 overflow-hidden">
-                {/* Code Symbol */}
-                <div className="absolute top-1/4 left-1/4 text-4xl sm:text-5xl text-blue-300 opacity-80 animate-pulse">&lt;/&gt;</div>
-                
-                {/* Data Flow Lines */}
-                <div className="absolute top-1/2 left-1/3 w-1/2 h-px bg-gradient-to-r from-green-400 to-transparent"></div>
-                <div className="absolute top-2/3 right-1/4 w-1/3 h-px bg-gradient-to-l from-purple-400 to-transparent"></div>
-                
-                {/* Circuit Pattern */}
-                <div className="absolute inset-0 opacity-30" 
-                     style={{backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '15px 15px'}}></div>
-                
-                {/* Binary Code */}
-                <div className="absolute bottom-1/4 right-1/4 text-xs tracking-widest text-green-400 opacity-70 font-mono">
-                  10110101<br/>01001011<br/>11001010
-                </div>
-                
-                {/* Security Shield */}
-                <div className="absolute top-1/3 right-1/3">
-                  <svg className="w-10 h-10 sm:w-12 sm:h-12 text-blue-400 opacity-80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    <path d="M12 8v4"></path>
-                    <path d="M12 16h.01"></path>
-                  </svg>
-                </div>
-                
-                {/* Data Analytics Icon */}
-                <div className="absolute bottom-1/3 left-1/3">
-                  <svg className="w-8 h-8 sm:w-10 sm:h-10 text-purple-400 opacity-80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="3" y1="9" x2="21" y2="9"></line>
-                    <line x1="9" y1="21" x2="9" y2="9"></line>
-                  </svg>
-                </div>
-              </div>
-              
-              {/* Central Tech Glow */}
-              <div className="relative z-20 w-20 h-20 sm:w-24 sm:h-24 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center animate-pulse">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-400 bg-opacity-50 rounded-full flex items-center justify-center">
-                  <div className="text-white text-3xl sm:text-4xl opacity-80">⚡</div>
-                </div>
-              </div>
+            {/* Subtle Tech Overlay */}
+            <div className="absolute inset-0 bg-blue-900 bg-opacity-20 mix-blend-overlay pointer-events-none">
+              {/* Circuit Pattern */}
+              <div className="absolute inset-0 opacity-20" 
+                   style={{backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '15px 15px'}}></div>
             </div>
           </div>
           
-          {/* Animated Skill Badges - Different animations for each */}
+          {/* Animated Skill Badges */}
           <div className="absolute -top-8 -right-8 sm:-top-10 sm:-right-10 bg-purple-600 text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full transform hover:scale-110 transition-all duration-700 animate-pulse z-30 text-xs sm:text-sm">
             Data Analysis
           </div>
@@ -137,6 +233,7 @@ const Home = () => {
                style={{animation: 'bounce 3s infinite 1s'}}>
             Software Dev
           </div>
+
         </div>
       </div>
     </div>

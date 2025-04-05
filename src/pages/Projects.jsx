@@ -6,7 +6,9 @@ import {
   Film, 
   Car, 
   Github, 
-  ExternalLink 
+  ExternalLink,
+  BookText,
+  ShoppingCart
 } from 'lucide-react';
 
 function Projects() {
@@ -14,20 +16,20 @@ function Projects() {
 
   const projects = [
     {
-      title: "Income & Expense Tracker Web App",
-      description: "A comprehensive full-stack web application designed to help users track their financial transactions in real-time with advanced reporting and visualization features.",
-      technologies: ["Django", "PostgreSQL", "React", "Tailwind CSS"],
-      icon: CreditCard,
-      githubLink: "https://github.com/your-username/income-expense-tracker",
-      liveLink: "#"
+      title: "Blog Wave App",
+      description: "A modern blogging platform with rich text editing, user authentication, and real-time updates. Features include markdown support, tags, and responsive design.",
+      technologies: ["Next.js", "Tailwind CSS", "Firebase", "React Markdown"],
+      icon: BookText,
+      githubLink: "https://github.com/your-username/blog-wave-app",
+      liveLink: "https://blog-wave-app.vercel.app/"
     },
     {
-      title: "Real-time Chat Application",
-      description: "A modern, secure messaging platform built with real-time communication capabilities, featuring end-to-end encryption and user authentication.",
-      technologies: ["React", "Node.js", "Socket.IO", "MongoDB"],
-      icon: MessageCircle,
-      githubLink: "https://github.com/your-username/real-time-chat-app",
-      liveLink: "#"
+      title: "Kenya Farmers Ecommerce Platform",
+      description: "An e-commerce platform connecting Kenyan farmers directly with consumers. Includes product listings, shopping cart, payment integration, and farmer profiles.",
+      technologies: ["React", "Node.js", "MongoDB", "Stripe API"],
+      icon: ShoppingCart,
+      githubLink: "https://github.com/your-username/kenya-farmers-ecommerce",
+      liveLink: "https://kenya-farmers-ecommerce-platform.vercel.app/"
     },
     {
       title: "Movie Explorer App",
@@ -35,15 +37,15 @@ function Projects() {
       technologies: ["React", "The Movie Database API", "Redux"],
       icon: Film,
       githubLink: "https://github.com/your-username/movie-explorer",
-      liveLink: "#"
+      liveLink: "https://github.com/Mbarak-jr"
     },
     {
-      title: "Ride-Sharing Platform",
-      description: "Developed the Customer Ride module, implementing a robust system for managing ride transactions, payments, and user interactions.",
-      technologies: ["Python", "Django", "Stripe API", "Geolocation Services"],
-      icon: Car,
-      githubLink: "https://github.com/your-username/ride-sharing-platform",
-      liveLink: "#"
+      title: "Income & Expense Tracker Web App",
+      description: "A comprehensive full-stack web application designed to help users track their financial transactions in real-time with advanced reporting and visualization features.",
+      technologies: ["Django", "PostgreSQL", "React", "Tailwind CSS"],
+      icon: CreditCard,
+      githubLink: "https://github.com/your-username/income-expense-tracker",
+      liveLink: "https://github.com/Mbarak-jr"
     }
   ];
 

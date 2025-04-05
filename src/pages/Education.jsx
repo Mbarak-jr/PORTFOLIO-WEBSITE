@@ -2,8 +2,6 @@ import React from 'react';
 import { 
   GraduationCap, 
   Award, 
-  Download, 
-  BookOpen, 
   CloudDownload,
   Shield,
   Brain,
@@ -34,6 +32,15 @@ function Education() {
       icon: Cloud
     }
   ];
+
+  const handleDownloadCV = () => {
+    const link = document.createElement('a');
+    link.href = "https://drive.google.com/uc?export=download&id=1wraUWn8USPgAZve4IHjB7kuQOx2zgwgm";
+    link.setAttribute('download', 'Your_Name_CV.pdf');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center py-16 px-6">
@@ -86,11 +93,10 @@ function Education() {
           </div>
         </div>
 
-        {/* CV Download */}
+        {/* CV Download - Now with direct download functionality */}
         <div className="flex justify-center">
-          <a 
-            href="/path-to-your-cv.pdf" 
-            download 
+          <button
+            onClick={handleDownloadCV}
             className="
               flex items-center justify-center
               bg-blue-600 hover:bg-blue-700 
@@ -103,7 +109,7 @@ function Education() {
           >
             <CloudDownload className="mr-3 w-6 h-6" />
             Download My CV
-          </a>
+          </button>
         </div>
       </div>
     </div>
